@@ -66,8 +66,12 @@ function boardFull(board) {
   return findEmptySquares(board).length === 0;
 }
 
-function someoneWon(board) {
+function someoneWonRound(board) {
   return !!detectWinner(board);
+}
+
+function someoneWonMatch(playerWins, computerWins) {
+  return playerWins > (TOTAL_GAMES / 2) || computerWins > (TOTAL_GAMES / 2);
 }
 
 function detectWinner(board) {
@@ -98,6 +102,11 @@ function detectWinner(board) {
   return null;
 }
 
+function displayScore (playerWins, computerWins) {
+  console.log(`The current score is`)
+  console.log(`Player: ${playerWins}   Computer:${computerWins}`)
+}
+
 
 while (true) {
   let board = initializeBoard();
@@ -107,32 +116,29 @@ while (true) {
   while (true) {
     displayBoard(board);
     playerChoosesSquare(board);
-    if(!someoneWon(board) && !boardFull(board)) {
+    if(!someoneWonRound(board) && !boardFull(board)) {
       computerChoosesSquare(board);
       displayBoard(board);
     }
 
-    if (!someoneWon(board) && !boardFull(board)) continue;
+    if (!someoneWonRound(board) && !boardFull(board)) continue;
       displayBoard(board);
 
-      if (someoneWon(board)) {
+      if (someoneWonRound(board)) {
         let winner = detectWinner(board)
-
-        console.log(`${winner} won!`)
-
         if (winner === "Player") {
           playerWins += 1;
         } else {
           computerWins += 1;
         }
+        console.log(`${winner} won!`)
       } else {
         console.log("It's a tie!");
       }
 
-      console.log(`The current score is`)
-      console.log(`Player: ${playerWins}   Computer:${computerWins}`)
+      displayScore(playerWins, computerWins);
 
-      if (playerWins > (TOTAL_GAMES / 2) || computerWins > (TOTAL_GAMES / 2)) break;
+      if (someoneWonMatch(playerWins, computerWins)) break;
 
       let answer = rl.question("Enter any key to continue to the next game: ")
       board = initializeBoard();
